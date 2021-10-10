@@ -1,7 +1,10 @@
+//imported packages
 const inquirer = require('inquirer');
 const fs = require('fs');
+const generateMarkdown = require('./generateMarkdown.js');
 
-inquirer.prompt([
+
+const questions = [
     {
         type: 'input',
         message: 'Enter the title of your project?',
@@ -23,28 +26,21 @@ inquirer.prompt([
         name: 'usage'
     },
     {
-        type: 'checkbox',
+        type: 'list',
         message: 'Choose a license from the following list:',
         name: 'license',
         choices: [
-            '[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)',
-            
-            '[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)',
-            
-            '[![License: CC0-1.0](https://licensebuttons.net/l/zero/1.0/80x15.png)](http://creativecommons.org/publicdomain/zero/1.0/)',
-            
-            '[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)',
-            
-            '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)',
-
-            '[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)',
-            
+            'Apache 2.0',
+            'BSD 3',
+            'Public Domain',
+            'GPLv3',
+            'MIT',
             'None'
         ]
     },
     {
         type: 'input',
-        message: 'Enter names of the contribution guidelines:',
+        message: 'Enter the contribution guidelines:',
         name: 'contributing'
     },
     {
@@ -52,10 +48,16 @@ inquirer.prompt([
         message: 'Enter test instructions:',
         name: 'test'
     }
-])
+]
 
-.then((response) => {
-    fs.writeFile('README.md', JSON.stringify(response), (err) => {
+//calls the questions prompt on load then generates text which is then written into the readme file
+const init = (() => {
+    inquirer.prompt(questions)
+    .then((data) => {
+        fs.writeFile('README.md', generateMarkdown.generateMarkdown(data), (err) => {
         err ? console.log(err) : console.log('Your README.md has been created.')
+        })  
     })
-})
+});
+
+init();
